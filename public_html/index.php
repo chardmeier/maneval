@@ -39,7 +39,7 @@
 		case "Translation 2":
 			$j = $corpus1 < $corpus2 ? 2 : 1;
 			break;
-		case "Equally good":
+		case "Same quality":
 			$j = 0;
 			break;
 		}
@@ -214,7 +214,7 @@ Which translation of the last sentence is better?
 <td align="left"><input type="submit" name="judgment" value="Translation 1" /></td>
 <td align="right"><input type="submit" name="judgment" value="Translation 2" /></td></tr>
 <tr><td></td>
-<td align="center" colspan="2"><input type="submit" name="judgment" value="Equally good" /></td></tr>
+<td align="center" colspan="2"><input type="submit" name="judgment" value="Same quality" /></td></tr>
 </table>
 <input type="hidden" name="corpus1" value="<?php echo $corpus1; ?>" />
 <input type="hidden" name="corpus2" value="<?php echo $corpus2; ?>" />
