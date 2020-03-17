@@ -183,6 +183,8 @@
 		exit(1);
 	}
 ?>
+</p>
+<p>
 Note: If the quality of two translations is the same, you may assign the same rank to them to indicate a tie.
 </p>
 <table width="900" cellpadding="10">
