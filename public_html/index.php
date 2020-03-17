@@ -20,7 +20,7 @@
 		return array_key_exists($k, $_POST);
 	}
 
-	function store_judgment($db, $line, $corpus1, $rank1, $corpus2, $rank2) {
+	function store_judgment($db, $task_id, $line, $corpus1, $rank1, $corpus2, $rank2) {
 		if($rank1 == $rank2)
 			$j = 0;
 		else if($rank1 < $rank2)
@@ -36,7 +36,7 @@
 	function create_judgments($db, $task_id, $corpus1, $corpus2) {
 		$query = $db->prepare("insert into judgments (task_id, corpus1, corpus2, line) " .
 			"select :task_id, :corpus1, :corpus2, s1.line from sentences as s1, sentences as s2 " .
-			"where s1.corpus=:corpus1 and s2.corpus=:corpus2 and s1.line=s2.line");
+			"where s1.corpus=:corpus1 and s2.corpus=:corpus2 and s1.line=s2.line and s1.orderid=0 and s2.orderid=0");
 		$params = array("task_id" => $task_id, "corpus1" => $corpus1, "corpus2" => $corpus2);
 		if(!$create_judgments->execute($pair)) {
 			echo "Problem creating judgment records.\n";
@@ -68,9 +68,9 @@
 		ksort($rank_pairs);
 		$corpora = array_keys($rank_pairs);
 		$ranks = array_values($rank_pairs);
-		store_judgment($db, $line, $corpora[0], $ranks[0], $corpora[1], $ranks[1]);
-		store_judgment($db, $line, $corpora[0], $ranks[0], $corpora[2], $ranks[2]);
-		store_judgment($db, $line, $corpora[1], $ranks[1], $corpora[2], $ranks[2]);
+		store_judgment($db, $task_id, $line, $corpora[0], $ranks[0], $corpora[1], $ranks[1]);
+		store_judgment($db, $task_id, $line, $corpora[0], $ranks[0], $corpora[2], $ranks[2]);
+		store_judgment($db, $task_id, $line, $corpora[1], $ranks[1], $corpora[2], $ranks[2]);
 	}
 
 	$error = $done = false;
@@ -80,8 +80,8 @@
 	if($record[0] == 1)
 		$done = true;
 
-	$get_task_description = $db->prepare("select tournament.* from tournament, current_task " .
-		"where tournament.id=current_task.task");
+	$get_task_description = $db->prepare("select tasks.* from tasks, current_task " .
+		"where tasks.id=current_task.task");
 	$check_judgments = $db->prepare("select count(*) as count from judgments where task_id=:id");
 
 	while(!$error && !$done) {
