@@ -14,7 +14,7 @@
 
 	error_reporting(E_ALL | E_STRICT);
 
-	$db = new PDO("sqlite:/home/staff/ch/maneval/maneval.db");
+	$db = new PDO("sqlite:/home/staff/ch/maneval-enru/data/maneval.db");
 
 	function check_post_key($k) {
 		return array_key_exists($k, $_POST);
