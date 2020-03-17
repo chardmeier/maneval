@@ -49,10 +49,10 @@
 
 	function get_lines($db, $corpus, $line) {
 		$get_lines = $db->prepare("select sentence from sentences where corpus=:corpus and line=:line order by orderid");
-		$res = $get_line->execute(array("corpus" => $corpus, "line" => $line));
+		$res = $get_lines->execute(array("corpus" => $corpus, "line" => $line));
 		if(!$res)
 			return false;
-		$recs = $res->fetchAll();
+		$recs = $get_lines->fetchAll();
 		$text = array();
 		foreach($recs as $sentence)
 			$text[] = $sentence["sentence"];
@@ -86,17 +86,17 @@
 	$check_judgments = $db->prepare("select count(*) as count from judgments where task_id=:task_id");
 
 	$eval_type = "Machine Translation"; # just to have a default value
-	while(!$error && !$done) {
-		if(!$get_task_description->execute()) {
+	if(!$error && !$done)
+		if(!$get_task_description->execute())
 			$error = 1;
-			break;
-		}
-		$task_record = $get_task_description->fetch();
-		if(!$task_record) {
-			$error = 2;
-			break;
-		}
 
+	if(!$error && !$done) {
+		$task_record = $get_task_description->fetch();
+		if(!$task_record)
+			$error = 2;
+	}
+
+	if(!$error && !$done) {
 		$task_id = $task_record["id"];
 		$source = $task_record["source"];
 		$eval_type = $task_record["eval_type"];
