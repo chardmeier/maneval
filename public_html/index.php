@@ -248,8 +248,7 @@ Note: If the quality of two translations is the same, you may assign the same ra
 	if($show_source)
 		echo "<td></td>";
 ?>
-<td></td><td></td>
-<td><button>Submit</button></td>
+<td></td><td></td><td align="right"><button>Submit</button></td>
 </table>
 <input type="hidden" name="corpus1" value="<?php echo $corpus_ids[$perm[0]]; ?>" />
 <input type="hidden" name="corpus2" value="<?php echo $corpus_ids[$perm[1]]; ?>" />
