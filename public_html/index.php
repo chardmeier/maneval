@@ -14,16 +14,6 @@
 
 	error_reporting(E_ALL | E_STRICT);
 
-	function enough_judgments($total, $count1, $count2, $equal) {
-		if($count1 + $count2 + $equal == $total)
-			return true;
-
-		if($count1 + $count2 < 70)
-			return false;
-
-		return true;
-	}
-
 	$db = new PDO("sqlite:/home/staff/ch/maneval/maneval.db");
 
 	function check_post_key($k) {
@@ -41,6 +31,31 @@
 		$query = sprintf("update judgments set judgment=%d where corpus1=%d and corpus2=%d and line=%d",
 			$j, $corpus1, $corpus2, $line);
 		$db->exec($query);
+	}
+
+	function create_judgments($db, $task_id, $corpus1, $corpus2) {
+		$query = $db->prepare("insert into judgments (task_id, corpus1, corpus2, line) " .
+			"select :task_id, :corpus1, :corpus2, s1.line from sentences as s1, sentences as s2 " .
+			"where s1.corpus=:corpus1 and s2.corpus=:corpus2 and s1.line=s2.line");
+		$params = array("task_id" => $task_id, "corpus1" => $corpus1, "corpus2" => $corpus2);
+		if(!$create_judgments->execute($pair)) {
+			echo "Problem creating judgment records.\n";
+			$arr = $db->errorInfo();
+			print_r($arr);
+			exit(1);
+		}
+	}
+
+	function get_lines($db, $corpus, $line) {
+		$get_lines = $db->prepare("select sentence from sentences where corpus=:corpus and line=:line order by orderid");
+		$res = get_line->execute(array("corpus" => $corpus, "line" => $line));
+		if(!$res)
+			return false;
+		$recs = $res->fetchAll();
+		$text = array();
+		for($recs as $sentence)
+			$text[] = $sentence["sentence"];
+		return $text;
 	}
 
 	$keys = array("corpus1", "corpus2", "corpus3", "line", "rank1", "rank2", "rank3");
@@ -67,13 +82,8 @@
 
 	$get_task_description = $db->prepare("select tournament.* from tournament, current_task " .
 		"where tournament.id=current_task.task");
-	$get_stats = $db->prepare("select judgment, count(*) as count from judgments " .
-		"where corpus1=:corpus1 and corpus2=:corpus2 group by judgment");
-	$create_judgments = $db->prepare("insert into judgments (corpus1, corpus2, line) " .
-		"select :corpus1, :corpus2, s1.line from sentences as s1, sentences as s2 " .
-		"where s1.corpus=:corpus1 and s2.corpus=:corpus2 and s1.line=s2.line and s1.sentence!=s2.sentence");
+	$check_judgments = $db->prepare("select count(*) as count from judgments where task_id=:id");
 
-	$new_pair = false;
 	while(!$error && !$done) {
 		if(!$get_task_description->execute()) {
 			$error = true;
@@ -85,50 +95,26 @@
 			break;
 		}
 
-		$pair = array("corpus1" => $task_record["corpus1"], "corpus2" => $task_record["corpus2"]);
-		$get_stats->execute($pair);
-		$stats = $get_stats->fetchAll();
+		$task_id = $task_record["id"];
+		$source = $task_record["source"];
+		$eval_type = $task_record["eval_type"];
+		$corpus1 = $task_record["corpus1"];
+		$corpus2 = $task_record["corpus2"];
+		$corpus3 = $task_record["corpus3"];
 
-		if(count($stats) == 0) {
-			$new_pair = true;
-			if(!$create_judgments->execute($pair)) {
-				echo "Problem creating judgment records.\n";
-				$arr = $db->errorInfo();
-				print_r($arr);
-				exit(1);
-			}
-			$get_stats->execute($pair);
-			$stats = $get_stats->fetchAll();
+		$check_judgments->execute($task_record);
+		$cnt = $check_judgments->fetchAll();
+
+		if($cnt["count"] == 0) {
+			create_judgments($task_id, $corpus1, $corpus2);
+			create_judgments($task_id, $corpus1, $corpus3);
+			create_judgments($task_id, $corpus2, $corpus3);
 		}
-
-		$equal = $total = $better1 = $better2 = 0;
-		for($i = 0; $i < count($stats); $i++) {
-			$total += $stats[$i]["count"];
-			if($stats[$i]["judgment"] === "0")
-				$equal = $stats[$i]["count"];
-			if($stats[$i]["judgment"] === "1")
-				$better1 = $stats[$i]["count"];
-			if($stats[$i]["judgment"] === "2")
-				$better2 = $stats[$i]["count"];
-		}
-
-		if(enough_judgments($total, $better1, $better2, $equal)) {
-			if($better1 >= $better2)
-				$next = $task_record["next1"];
-			else
-				$next = $task_record["next2"];
-			$db->exec(sprintf("update current_task set task=%s", is_null($next) ? "null" : $next));
-		} else
-			break;
 	}
 
 	if(!$error && !$done) {
-		$source = $task_record["source"];
-		$corpus1 = $task_record["corpus1"];
-		$corpus2 = $task_record["corpus2"];
-
-		$query = sprintf("select line from judgments where corpus1=%d and corpus2=%d and judgment is null " .
-			"order by random() limit 1", $corpus1, $corpus2);
+		$query = sprintf("select line from judgments where task_id=%d and corpus1=%d and corpus2=%d and judgment is null " .
+			"order by random() limit 1", $task_id, $corpus1, $corpus2);
 		$res = $db->query($query);
 		if(!$res)
 			$error = true;
@@ -136,61 +122,27 @@
 	if(!$error && !$done) {
 		$record = $res->fetch();
 		$line = $record["line"];
-
-		$find_start = $db->prepare("select start from documents where corpus=:corpus and start<=:line order by start desc limit 1");
-		$res = $find_start->execute(array("corpus" => $source, "line" => $line));
-		if(!$res)
+		do {
 			$error = true;
-	}
-	if(!$error && !$done) {
-		$record = $find_start->fetch();
-		$docstart = $record["start"];
-		if($line - $docstart > 5)
-			$minline = $line - 5;
-		else
-			$minline = $docstart;
+			$s_lines = get_lines($db, $source, $line);
+			if(!$s_lines)
+				break;
+			$c1_lines = get_lines($db, $corpus1, $line);
+			if(!$s_lines)
+				break;
+			$c2_lines = get_lines($db, $corpus2, $line);
+			if(!$s_lines)
+				break;
+			$c3_lines = get_lines($db, $corpus3, $line);
+			if(!$s_lines)
+				break;
+			$error = false;
+		} while(false);
 
-		$get_line = $db->prepare("select sentence from sentences where corpus=:corpus and line between :minline and :line order by line");
-
-		$res = $get_line->execute(array("corpus" => $source, "minline" => $minline, "line" => $line));
-		if(!$res)
-			$error = true;
-	}
-	if(!$error && !$done) {
-		$record = $get_line->fetchAll();
-		$source = array();
-		foreach($record as $sentence)
-			$source[] = $sentence["sentence"];
-
-		$res = $get_line->execute(array("corpus" => $corpus1, "minline" => $minline, "line" => $line));
-		if(!$res)
-			$error = true;
-	}
-	if(!$error && !$done) {
-		$record = $get_line->fetchAll();
-		$trans1 = array();
-		foreach($record as $sentence)
-			$trans1[] = $sentence["sentence"];
-
-		$res = $get_line->execute(array("corpus" => $corpus2, "minline" => $minline, "line" => $line));
-		if(!$res)
-			$error = true;
-	}
-	if(!$error && !$done) {
-		$record = $get_line->fetchAll();
-		$trans2 = array();
-		foreach($record as $sentence)
-			$trans2[] = $sentence["sentence"];
-
-		if(mt_rand(0, 1) == 1) {
-			$tmp = $corpus2;
-			$corpus2 = $corpus1;
-			$corpus1 = $tmp;
-
-			$tmp = $trans2;
-			$trans2 = $trans1;
-			$trans1 = $tmp;
-		}
+		$corpus_ids = array($corpus1, $corpus2, $corpus3);
+		$translations = array($c1_lines, $c2_lines, $c3_lines);
+		$perm = array(0, 1, 2);
+		shuffle($perm);
 	}
 ?>
 <html>
@@ -199,7 +151,7 @@
 <title>Machine Translation Evaluation</title>
 </head>
 <body>
-<h1>Machine Translation Evaluation</h1>
+<h1><?php echo $eval_type; ?> Evaluation</h1>
 <?php
 	if($done)
 		echo "No more translations to evaluate.";
@@ -209,18 +161,47 @@
 ?>
 <form action="index.php" method="post">
 <p>
-Which translation of the last sentence is better?
+<?php
+	switch($eval_type) {
+	case "Adequacy":
+		echo "Please rank the three translation according to <strong>how adequately the translation of the ".
+			"last sentence reflects the meaning of the source, given the context.</strong>";
+		$show_source = true;
+		break;
+	case "Fluency":
+		echo "Please rank the three translation according to <strong>the fluency of the last sentence, " .
+			"given the context of the previous sentences.</strong>";
+		$show_source = false;
+		break;
+	default:
+		echo "Unknown evaluation type: " . $eval_type;
+		exit(1);
+	}
+?>
+Note: If the quality of two translations is the same, you may assign the same rank to them to indicate a tie.
 </p>
 <table width="900" cellpadding="10">
-<tr><td>Source:</td><td>Translation 1:</td><td>Translation 2:</td><td>Translation 3:</td></tr>
+<tr>
 <?php
-	for($i = 0; $i < count($source); $i++)
-		echo "<tr><td valign=\"top\">" . htmlspecialchars($source[$i]) . "</td>" .
-			"<td valign=\"top\">" . htmlspecialchars($trans1[$i]) . "</td>" .
-			"<td valign=\"top\">" . htmlspecialchars($trans2[$i]) . "</td>" .
-			"<td valign=\"top\">" . htmlspecialchars($trans3[$i]) . "</td></tr>\n";
+	if($show_source)
+		echo "<td>Source:</td>";
 ?>
-<tr><td></td>
+<td>Translation 1:</td><td>Translation 2:</td><td>Translation 3:</td></tr>
+<?php
+	for($i = 0; $i < count($source); $i++) {
+		echo "<tr>";
+		if($show_source)
+			echo "<td valign=\"top\">" . htmlspecialchars($source[$i]) . "</td>";
+		echo "<td valign=\"top\">" . htmlspecialchars($translations[$perm[0]][$i]) . "</td>" .
+			"<td valign=\"top\">" . htmlspecialchars($translations[$perm[1]][$i]) . "</td>" .
+			"<td valign=\"top\">" . htmlspecialchars($translations[$perm[2]][$i]) . "</td></tr>\n";
+	}
+?>
+<tr>
+<?php
+	if($show_source)
+		echo "<td></td>";
+?>
 <td align="left">
   <fieldset>
     <input type="radio" id="r11" name="rank1" value="high"/>
@@ -253,9 +234,9 @@ Which translation of the last sentence is better?
 </td>
 </tr>
 </table>
-<input type="hidden" name="corpus1" value="<?php echo $corpus1; ?>" />
-<input type="hidden" name="corpus2" value="<?php echo $corpus2; ?>" />
-<input type="hidden" name="corpus3" value="<?php echo $corpus3; ?>" />
+<input type="hidden" name="corpus1" value="<?php echo $corpus_ids[$perm[0]]; ?>" />
+<input type="hidden" name="corpus2" value="<?php echo $corpus_ids[$perm[1]]; ?>" />
+<input type="hidden" name="corpus3" value="<?php echo $corpus_ids[$perm[2]]; ?>" />
 <input type="hidden" name="line" value="<?php echo $line; ?>" />
 </form>
 <?php
