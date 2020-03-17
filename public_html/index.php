@@ -191,10 +191,10 @@ Note: If the quality of two translations is the same, you may assign the same ra
 ?>
 <td>Translation 1:</td><td>Translation 2:</td><td>Translation 3:</td></tr>
 <?php
-	for($i = 0; $i < count($source); $i++) {
+	for($i = 0; $i < count($s_lines); $i++) {
 		echo "<tr>";
 		if($show_source)
-			echo "<td valign=\"top\">" . htmlspecialchars($source[$i]) . "</td>";
+			echo "<td valign=\"top\">" . htmlspecialchars($s_lines[$i]) . "</td>";
 		echo "<td valign=\"top\">" . htmlspecialchars($translations[$perm[0]][$i]) . "</td>" .
 			"<td valign=\"top\">" . htmlspecialchars($translations[$perm[1]][$i]) . "</td>" .
 			"<td valign=\"top\">" . htmlspecialchars($translations[$perm[2]][$i]) . "</td></tr>\n";
