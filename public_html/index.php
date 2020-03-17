@@ -10,7 +10,7 @@
 		die();
 	}
 	set_error_handler('errh');
-	set_exception_handler('exch');
+	#set_exception_handler('exch');
 
 	error_reporting(E_ALL | E_STRICT);
 
@@ -83,7 +83,7 @@
 
 	$get_task_description = $db->prepare("select tasks.* from tasks, current_task " .
 		"where tasks.id=current_task.task");
-	$check_judgments = $db->prepare("select count(*) as count from judgments where task_id=:id");
+	$check_judgments = $db->prepare("select count(*) as count from judgments where task_id=:task_id");
 
 	$eval_type = "Machine Translation"; # just to have a default value
 	while(!$error && !$done) {
@@ -104,13 +104,13 @@
 		$corpus2 = $task_record["corpus2"];
 		$corpus3 = $task_record["corpus3"];
 
-		$check_judgments->execute($task_record);
-		$cnt = $check_judgments->fetchAll();
+		$check_judgments->execute(array("task_id" => $task_id));
+		$record = $check_judgments->fetch();
 
-		if($cnt["count"] == 0) {
-			create_judgments($task_id, $corpus1, $corpus2);
-			create_judgments($task_id, $corpus1, $corpus3);
-			create_judgments($task_id, $corpus2, $corpus3);
+		if($record[0] == 0) {
+			create_judgments($db, $task_id, $corpus1, $corpus2);
+			create_judgments($db, $task_id, $corpus1, $corpus3);
+			create_judgments($db, $task_id, $corpus2, $corpus3);
 		}
 	}
 
