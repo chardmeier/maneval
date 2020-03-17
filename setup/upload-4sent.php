@@ -8,6 +8,7 @@ if(count($argv) != 2) {
 $infile = $argv[1];
 
 $db = new PDO("sqlite:/home/staff/ch/maneval-enru/data/maneval.db");
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $find_corpus = $db->prepare("select id from corpora where name=:name");
 $find_corpus->execute(array("name" => $infile));
