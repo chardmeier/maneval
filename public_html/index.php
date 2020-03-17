@@ -39,7 +39,7 @@
 			"select :task_id, :corpus1, :corpus2, s1.line from sentences as s1, sentences as s2 " .
 			"where s1.corpus=:corpus1 and s2.corpus=:corpus2 and s1.line=s2.line and s1.orderid=0 and s2.orderid=0");
 		$params = array("task_id" => $task_id, "corpus1" => $corpus1, "corpus2" => $corpus2);
-		if(!$create_judgments->execute($pair)) {
+		if(!$query->execute($params)) {
 			echo "Problem creating judgment records.\n";
 			$arr = $db->errorInfo();
 			print_r($arr);
