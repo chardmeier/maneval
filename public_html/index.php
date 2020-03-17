@@ -216,31 +216,31 @@ Note: If the quality of two translations is the same, you may assign the same ra
 ?>
 <td align="left">
   <fieldset>
-    <input type="radio" id="r11" name="rank1" value="high"/>
+    <input type="radio" id="r11" name="rank1" value="1"/>
     <label for="r11"> best</label>
-    <input type="radio" id="r12" name="rank1" value="mid"/>
+    <input type="radio" id="r12" name="rank1" value="2"/>
     <label for="r12"> middle</label>
-    <input type="radio" id="r13" name="rank1" value="low"/>
+    <input type="radio" id="r13" name="rank1" value="3"/>
     <label for="r13"> worst</label>
   </fieldset>
 </td>
 <td align="left">
   <fieldset>
-    <input type="radio" id="r21" name="rank2" value="high"/>
+    <input type="radio" id="r21" name="rank2" value="1"/>
     <label for="r21"> best</label>
-    <input type="radio" id="r22" name="rank2" value="mid"/>
+    <input type="radio" id="r22" name="rank2" value="2"/>
     <label for="r22"> middle</label>
-    <input type="radio" id="r23" name="rank2" value="low"/>
+    <input type="radio" id="r23" name="rank2" value="3"/>
     <label for="r23"> worst</label>
   </fieldset>
 </td>
 <td align="left">
   <fieldset>
-    <input type="radio" id="r31" name="rank3" value="high"/>
+    <input type="radio" id="r31" name="rank3" value="1"/>
     <label for="r31"> best</label>
-    <input type="radio" id="r32" name="rank3" value="mid"/>
+    <input type="radio" id="r32" name="rank3" value="2"/>
     <label for="r32"> middle</label>
-    <input type="radio" id="r33" name="rank3" value="low"/>
+    <input type="radio" id="r33" name="rank3" value="3"/>
     <label for="r33"> worst</label>
   </fieldset>
 </td>
