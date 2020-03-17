@@ -34,11 +34,13 @@
 		$db->exec($query);
 	}
 
-	function create_judgments($db, $task_id, $corpus1, $corpus2) {
+	function create_judgments($db, $task_id, $corpus1, $corpus2, $orderid_to_compare) {
 		$query = $db->prepare("insert into judgments (task_id, corpus1, corpus2, line) " .
 			"select :task_id, :corpus1, :corpus2, s1.line from sentences as s1, sentences as s2 " .
-			"where s1.corpus=:corpus1 and s2.corpus=:corpus2 and s1.line=s2.line and s1.orderid=0 and s2.orderid=0");
-		$params = array("task_id" => $task_id, "corpus1" => $corpus1, "corpus2" => $corpus2);
+			"where s1.corpus=:corpus1 and s2.corpus=:corpus2 and s1.line=s2.line " .
+			"and s1.orderid=:orderid and s2.orderid=:orderid and s1.sentence != s2.sentence");
+		$params = array("task_id" => $task_id, "corpus1" => $corpus1, "corpus2" => $corpus2,
+				"orderid" => $orderid_to_compare);
 		if(!$query->execute($params)) {
 			echo "Problem creating judgment records.\n";
 			$arr = $db->errorInfo();
@@ -108,9 +110,9 @@
 		$record = $check_judgments->fetch();
 
 		if($record[0] == 0) {
-			create_judgments($db, $task_id, $corpus1, $corpus2);
-			create_judgments($db, $task_id, $corpus1, $corpus3);
-			create_judgments($db, $task_id, $corpus2, $corpus3);
+			create_judgments($db, $task_id, $corpus1, $corpus2, 3);
+			create_judgments($db, $task_id, $corpus1, $corpus3, 3);
+			create_judgments($db, $task_id, $corpus2, $corpus3, 3);
 		}
 	}
 
