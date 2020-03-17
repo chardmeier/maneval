@@ -117,7 +117,7 @@
 	}
 
 	if(!$error && !$done) {
-		$query = sprintf("select line from judgments where task_id=%d and corpus1=%d and corpus2=%d and judgment is null " .
+		$query = sprintf("select line from judgments where task_id=%d and judgment is null " .
 			"order by random() limit 1", $task_id, $corpus1, $corpus2);
 		$res = $db->query($query);
 		if(!$res)
