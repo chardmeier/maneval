@@ -26,27 +26,36 @@
 
 	$db = new PDO("sqlite:/home/staff/ch/maneval/maneval.db");
 
-	if(array_key_exists("corpus1", $_POST) && array_key_exists("corpus2", $_POST) &&
-			array_key_exists("line", $_POST) && array_key_exists("judgment", $_POST)) { 
-		$corpus1 = $_POST["corpus1"];
-		$corpus2 = $_POST["corpus2"];
-		$line = $_POST["line"];
-		$judgment = $_POST["judgment"];
-		switch($judgment) {
-		case "Translation 1":
-			$j = $corpus1 < $corpus2 ? 1 : 2;
-			break;
-		case "Translation 2":
-			$j = $corpus1 < $corpus2 ? 2 : 1;
-			break;
-		case "Same quality":
+	function check_post_key($k) {
+		return array_key_exists($k, $_POST);
+	}
+
+	function store_judgment($db, $line, $corpus1, $rank1, $corpus2, $rank2) {
+		if($rank1 == $rank2)
 			$j = 0;
-			break;
-		}
+		else if($rank1 < $rank2)
+			$j = 1;
+		else
+			$j = 2;
+
 		$query = sprintf("update judgments set judgment=%d where corpus1=%d and corpus2=%d and line=%d",
-			$j, min($corpus1, $corpus2), max($corpus1, $corpus2), $line);
-		$xquery = $query;
+			$j, $corpus1, $corpus2, $line);
 		$db->exec($query);
+	}
+
+	$keys = array("corpus1", "corpus2", "corpus3", "line", "rank1", "rank2", "rank3");
+	if(array_product(array_map('check_post_key', $keys))) {
+		$rank_pairs = array(
+			$_POST["corpus1"] => $_POST["rank1"],
+			$_POST["corpus2"] => $_POST["rank2"],
+			$_POST["corpus3"] => $_POST["rank3"]
+		);
+		ksort($rank_pairs);
+		$corpora = array_keys($rank_pairs);
+		$ranks = array_values($rank_pairs);
+		store_judgment($db, $line, $corpora[0], $ranks[0], $corpora[1], $ranks[1]);
+		store_judgment($db, $line, $corpora[0], $ranks[0], $corpora[2], $ranks[2]);
+		store_judgment($db, $line, $corpora[1], $ranks[1], $corpora[2], $ranks[2]);
 	}
 
 	$error = $done = false;
