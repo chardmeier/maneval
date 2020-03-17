@@ -203,28 +203,52 @@
 Which translation of the last sentence is better?
 </p>
 <table width="900" cellpadding="10">
-<tr><td>Source:</td><td>Translation 1:</td><td>Translation 2:</td></tr>
+<tr><td>Source:</td><td>Translation 1:</td><td>Translation 2:</td><td>Translation 3:</td></tr>
 <?php
 	for($i = 0; $i < count($source); $i++)
 		echo "<tr><td valign=\"top\">" . htmlspecialchars($source[$i]) . "</td>" .
 			"<td valign=\"top\">" . htmlspecialchars($trans1[$i]) . "</td>" .
-			"<td valign=\"top\">" . htmlspecialchars($trans2[$i]) . "</td></tr>\n";
+			"<td valign=\"top\">" . htmlspecialchars($trans2[$i]) . "</td>" .
+			"<td valign=\"top\">" . htmlspecialchars($trans3[$i]) . "</td></tr>\n";
 ?>
 <tr><td></td>
-<td align="left"><input type="submit" name="judgment" value="Translation 1" /></td>
-<td align="right"><input type="submit" name="judgment" value="Translation 2" /></td></tr>
-<tr><td></td>
-<td align="center" colspan="2"><input type="submit" name="judgment" value="Same quality" /></td></tr>
+<td align="left">
+  <fieldset>
+    <input type="radio" id="r11" name="rank1" value="high"/>
+    <label for="r11"> best</label>
+    <input type="radio" id="r12" name="rank1" value="mid"/>
+    <label for="r12"> middle</label>
+    <input type="radio" id="r13" name="rank1" value="low"/>
+    <label for="r13"> worst</label>
+  </fieldset>
+</td>
+<td align="left">
+  <fieldset>
+    <input type="radio" id="r21" name="rank2" value="high"/>
+    <label for="r21"> best</label>
+    <input type="radio" id="r22" name="rank2" value="mid"/>
+    <label for="r22"> middle</label>
+    <input type="radio" id="r23" name="rank2" value="low"/>
+    <label for="r23"> worst</label>
+  </fieldset>
+</td>
+<td align="left">
+  <fieldset>
+    <input type="radio" id="r31" name="rank3" value="high"/>
+    <label for="r31"> best</label>
+    <input type="radio" id="r32" name="rank3" value="mid"/>
+    <label for="r32"> middle</label>
+    <input type="radio" id="r33" name="rank3" value="low"/>
+    <label for="r33"> worst</label>
+  </fieldset>
+</td>
+</tr>
 </table>
 <input type="hidden" name="corpus1" value="<?php echo $corpus1; ?>" />
 <input type="hidden" name="corpus2" value="<?php echo $corpus2; ?>" />
+<input type="hidden" name="corpus3" value="<?php echo $corpus3; ?>" />
 <input type="hidden" name="line" value="<?php echo $line; ?>" />
 </form>
-<?php
-	if($new_pair)
-		echo "<p>Started new system pair.</p>\n";
-?>
-<p><?php echo $better1 + $better2 + $equal; ?> judgments collected for this system pair.</p>
 <?php
 	}
 ?>
