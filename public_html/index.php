@@ -15,6 +15,7 @@
 	error_reporting(E_ALL | E_STRICT);
 
 	$db = new PDO("sqlite:/home/staff/ch/maneval-enru/data/maneval.db");
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 	function check_post_key($k) {
 		return array_key_exists($k, $_POST);
@@ -87,12 +88,12 @@
 	$eval_type = "Machine Translation"; # just to have a default value
 	while(!$error && !$done) {
 		if(!$get_task_description->execute()) {
-			$error = true;
+			$error = 1;
 			break;
 		}
 		$task_record = $get_task_description->fetch();
 		if(!$task_record) {
-			$error = true;
+			$error = 2;
 			break;
 		}
 
@@ -118,13 +119,13 @@
 			"order by random() limit 1", $task_id, $corpus1, $corpus2);
 		$res = $db->query($query);
 		if(!$res)
-			$error = true;
+			$error = 3;
 	}
 	if(!$error && !$done) {
 		$record = $res->fetch();
 		$line = $record["line"];
 		do {
-			$error = true;
+			$error = 4;
 			$s_lines = get_lines($db, $source, $line);
 			if(!$s_lines)
 				break;
@@ -156,9 +157,10 @@
 <?php
 	if($done)
 		echo "No more translations to evaluate.";
-	else if($error)
-		echo "Internal error. Please contact the developer (Christian Hardmeier).";
-	else {
+	else if($error) {
+		echo "Internal error. Please contact the developer (Christian Hardmeier).\n";
+		echo "Error number " . $error;
+	} else {
 ?>
 <form action="index.php" method="post">
 <p>
