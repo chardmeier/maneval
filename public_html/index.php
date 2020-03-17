@@ -71,6 +71,8 @@
 		ksort($rank_pairs);
 		$corpora = array_keys($rank_pairs);
 		$ranks = array_values($rank_pairs);
+		$task_id = $_POST["task_id"];
+		$line = $_POST["line"];
 		store_judgment($db, $task_id, $line, $corpora[0], $ranks[0], $corpora[1], $ranks[1]);
 		store_judgment($db, $task_id, $line, $corpora[0], $ranks[0], $corpora[2], $ranks[2]);
 		store_judgment($db, $task_id, $line, $corpora[1], $ranks[1], $corpora[2], $ranks[2]);
