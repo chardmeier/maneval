@@ -250,6 +250,7 @@ Note: If the quality of two translations is the same, you may assign the same ra
 ?>
 <td></td><td></td><td align="right"><button>Submit</button></td>
 </table>
+<input type="hidden" name="task_id" value="<?php echo $task_id; ?>" />
 <input type="hidden" name="corpus1" value="<?php echo $corpus_ids[$perm[0]]; ?>" />
 <input type="hidden" name="corpus2" value="<?php echo $corpus_ids[$perm[1]]; ?>" />
 <input type="hidden" name="corpus3" value="<?php echo $corpus_ids[$perm[2]]; ?>" />
