@@ -1,5 +1,6 @@
 drop table current_task;
 create table current_task (
+	key text primary key,
 	task integer
 );
 
