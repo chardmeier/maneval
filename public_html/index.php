@@ -171,12 +171,12 @@
 <?php
 	switch($eval_type) {
 	case "Adequacy":
-		echo "Please rank the three translation according to <strong>how adequately the translation of the ".
+		echo "Please rank the three translations according to <strong>how adequately the translation of the ".
 			"last sentence reflects the meaning of the source, given the context.</strong>";
 		$show_source = true;
 		break;
 	case "Fluency":
-		echo "Please rank the three translation according to <strong>the fluency of the last sentence, " .
+		echo "Please rank the three translations according to <strong>the fluency of the last sentence, " .
 			"given the context of the previous sentences.</strong>";
 		$show_source = false;
 		break;
