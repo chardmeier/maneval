@@ -80,18 +80,22 @@
 
 	$error = $done = false;
 
-	$res = $db->query("select count(*) from current_task where task is null");
-	$record = $res->fetch();
+	$key = $_GET["key"];
+
+	$check_if_done = $db->prepare("select count(*) from current_task where task is null and key=:key");
+	$res = $check_if_done->execute(array("key" => $key));
+	$record = $check_if_done->fetch();
 	if($record[0] == 1)
 		$done = true;
 
 	$get_task_description = $db->prepare("select tasks.* from tasks, current_task " .
-		"where tasks.id=current_task.task");
+		"where tasks.id=current_task.task and current_task.key=:key");
 	$check_judgments = $db->prepare("select count(*) as count from judgments where task_id=:task_id");
+	$count_done = $db->prepare("select count(*) as count from judgments where task_id=:task_id and judgment is not null");
 
 	$eval_type = "Machine Translation"; # just to have a default value
 	if(!$error && !$done)
-		if(!$get_task_description->execute())
+		if(!$get_task_description->execute(array("key" => $key)))
 			$error = 1;
 
 	if(!$error && !$done) {
@@ -111,11 +115,17 @@
 		$check_judgments->execute(array("task_id" => $task_id));
 		$record = $check_judgments->fetch();
 
+		$total_judgments = $record[0];
 		if($record[0] == 0) {
-			create_judgments($db, $task_id, $corpus1, $corpus2, 3);
-			create_judgments($db, $task_id, $corpus1, $corpus3, 3);
-			create_judgments($db, $task_id, $corpus2, $corpus3, 3);
+			$error = 5;
+			# create_judgments($db, $task_id, $corpus1, $corpus2, 3);
+			# create_judgments($db, $task_id, $corpus1, $corpus3, 3);
+			# create_judgments($db, $task_id, $corpus2, $corpus3, 3);
 		}
+
+		$count_done->execute(array("task_id" => $task_id));
+		$record = $count_done->fetch();
+		$number_done = $record[0];
 	}
 
 	if(!$error && !$done) {
@@ -176,8 +186,9 @@
 		$show_source = true;
 		break;
 	case "Fluency":
-		echo "Please rank the three translations according to <strong>the fluency of the last sentence, " .
-			"given the context of the previous sentences.</strong>";
+		echo "Please rank the three translations according to " .
+			"<strong>how fluent the last sentence is, in terms of grammaticality, naturalness and consistency, " .
+			"taking into account the context of the previous sentences.</strong>";
 		$show_source = false;
 		break;
 	default:
@@ -258,6 +269,9 @@ Note: If the quality of two translations is the same, you may assign the same ra
 <input type="hidden" name="corpus3" value="<?php echo $corpus_ids[$perm[2]]; ?>" />
 <input type="hidden" name="line" value="<?php echo $line; ?>" />
 </form>
+<p>
+<?php echo $number_done . "/" . $total_judgments; ?> items completed.
+</p>
 <?php
 	}
 ?>
