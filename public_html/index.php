@@ -82,29 +82,23 @@
 
 	$key = $_GET["key"];
 
-	$check_if_done = $db->prepare("select count(*) from current_task where task is null and key=:key");
-	$res = $check_if_done->execute(array("key" => $key));
-	$record = $check_if_done->fetch();
-	if($record[0] == 1)
-		$done = true;
-
 	$get_task_description = $db->prepare("select tasks.* from tasks, current_task " .
 		"where tasks.id=current_task.task and current_task.key=:key");
 	$check_judgments = $db->prepare("select count(*) as count from judgments where task_id=:task_id");
 	$count_done = $db->prepare("select count(*) as count from judgments where task_id=:task_id and judgment is not null");
 
 	$eval_type = "Machine Translation"; # just to have a default value
-	if(!$error && !$done)
+	if(!$error)
 		if(!$get_task_description->execute(array("key" => $key)))
 			$error = 1;
 
-	if(!$error && !$done) {
+	if(!$error) {
 		$task_record = $get_task_description->fetch();
 		if(!$task_record)
 			$error = 2;
 	}
 
-	if(!$error && !$done) {
+	if(!$error) {
 		$task_id = $task_record["id"];
 		$source = $task_record["source"];
 		$eval_type = $task_record["eval_type"];
@@ -126,6 +120,9 @@
 		$count_done->execute(array("task_id" => $task_id));
 		$record = $count_done->fetch();
 		$number_done = $record[0];
+
+		if($number_done == $total_judgments)
+			$done = true;
 	}
 
 	if(!$error && !$done) {
