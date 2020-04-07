@@ -6,23 +6,23 @@ begin;
 --    80 lines shared with the other set
 --    20 lines duplicated
 
-create temp table general_set (item integer primary key autoincrement, set text, line integer);
+create temp table general_set (item integer primary key autoincrement, set_id text, line integer);
 
 -- IAA set first
 
-insert into general_set (set, line)
+insert into general_set (set_id, line)
 select 'A', distinct line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='general/source.txt'
 order by random()
 limit 80;
 
-insert into general_set (set, line)
+insert into general_set (set_id, line)
 select 'B', line from general_set;
 
 -- distinct examples
 
-insert into general_set (set, line)
+insert into general_set (set_id, line)
 select 'A', distinct line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='general/source.txt'
@@ -30,7 +30,7 @@ and line not in (select line from general_set)
 order by random()
 limit 320;
 
-insert into general_set (set, line)
+insert into general_set (set_id, line)
 select 'B', distinct line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='general/source.txt'
@@ -40,15 +40,15 @@ limit 320;
 
 -- intra-annotator agreement
 
-insert into general_set (set, line)
-select set, line from general_set
-where set='A'
+insert into general_set (set_id, line)
+select set_id, line from general_set
+where set_id='A'
 order by random()
 limit 20;
 
-insert into general_set (set, line)
-select set, line from general_set
-where set='B'
+insert into general_set (set_id, line)
+select set_id, line from general_set
+where set_id='B'
 order by random()
 limit 20;
 
@@ -58,23 +58,23 @@ limit 20;
 --   20 lines shared with the other set
 --   10 lines duplicated
 
-create temp table discourse_set (item integer primary key autoincrement, set text, line integer);
+create temp table discourse_set (item integer primary key autoincrement, set_id text, line integer);
 
 -- IAA set first
 
-insert into discourse_set (set, line)
+insert into discourse_set (set_id, line)
 select 'A', distinct line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='discourse/source.txt'
 order by random()
 limit 20;
 
-insert into discourse_set (set, line)
+insert into discourse_set (set_id, line)
 select 'B', line from discourse_set;
 
 -- distinct examples
 
-insert into discourse_set (set, line)
+insert into discourse_set (set_id, line)
 select 'A', distinct line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='discourse/source.txt'
@@ -82,7 +82,7 @@ and line not in (select line from discourse_set)
 order by random()
 limit 80;
 
-insert into discourse_set (set, line)
+insert into discourse_set (set_id, line)
 select 'B', distinct line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='discourse/source.txt'
@@ -92,27 +92,27 @@ limit 80;
 
 -- intra-annotator agreement
 
-insert into discourse_set (set, line)
-select set, line from discourse_set
-where set='A'
+insert into discourse_set (set_id, line)
+select set_id, line from discourse_set
+where set_id='A'
 order by random()
 limit 10;
 
-insert into discourse_set (set, line)
-select set, line from discourse_set
-where set='B'
+insert into discourse_set (set_id, line)
+select set_id, line from discourse_set
+where set_id='B'
 order by random()
 limit 10;
 
 -- Merge sets
 
-create temp table all_sets (item integer primary key autoincrement, set text, line integer);
+create temp table all_sets (item integer primary key autoincrement, set_id text, line integer);
 
-insert into all_sets (set, line)
-select set, line from general_set;
+insert into all_sets (set_id, line)
+select set_id, line from general_set;
 
-insert into all_sets (set, line)
-select set, line from discourse_set;
+insert into all_sets (set_id, line)
+select set_id, line from discourse_set;
 
 -- Create task records
 
