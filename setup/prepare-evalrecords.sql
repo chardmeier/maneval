@@ -14,7 +14,7 @@ create temp table general_set (item integer primary key autoincrement, set_id te
 -- IAA set first
 
 insert into general_set (set_id, line)
-select 'A', distinct line from sentences, corpora
+select distinct 'A', line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='general/source.txt'
 order by random()
@@ -26,7 +26,7 @@ select 'B', line from general_set;
 -- distinct examples
 
 insert into general_set (set_id, line)
-select 'A', distinct line from sentences, corpora
+select distinct 'A', line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='general/source.txt'
 and line not in (select line from general_set)
@@ -34,7 +34,7 @@ order by random()
 limit 320;
 
 insert into general_set (set_id, line)
-select 'B', distinct line from sentences, corpora
+select distinct 'B', line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='general/source.txt'
 and line not in (select line from general_set)
@@ -66,7 +66,7 @@ create temp table discourse_set (item integer primary key autoincrement, set_id 
 -- IAA set first
 
 insert into discourse_set (set_id, line)
-select 'A', distinct line from sentences, corpora
+select distinct 'A', line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='discourse/source.txt'
 order by random()
@@ -78,7 +78,7 @@ select 'B', line from discourse_set;
 -- distinct examples
 
 insert into discourse_set (set_id, line)
-select 'A', distinct line from sentences, corpora
+select distinct 'A', line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='discourse/source.txt'
 and line not in (select line from discourse_set)
@@ -86,7 +86,7 @@ order by random()
 limit 80;
 
 insert into discourse_set (set_id, line)
-select 'B', distinct line from sentences, corpora
+select distinct 'B', line from sentences, corpora
 where sentences.corpus=corpora.id
 and corpora.name='discourse/source.txt'
 and line not in (select line from discourse_set)
