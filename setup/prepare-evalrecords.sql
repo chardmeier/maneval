@@ -6,7 +6,7 @@ begin;
 --    80 lines shared with the other set
 --    20 lines duplicated
 
-create temp table general_set (item int primary key autoincrement, set text, line int);
+create temp table general_set (item integer primary key autoincrement, set text, line integer);
 
 -- IAA set first
 
@@ -58,7 +58,7 @@ limit 20;
 --   20 lines shared with the other set
 --   10 lines duplicated
 
-create temp table discourse_set (item int primary key autoincrement, set text, line int);
+create temp table discourse_set (item integer primary key autoincrement, set text, line integer);
 
 -- IAA set first
 
@@ -106,7 +106,7 @@ limit 10;
 
 -- Merge sets
 
-create temp table all_sets (item int primary key autoincrement, set text, line int);
+create temp table all_sets (item integer primary key autoincrement, set text, line integer);
 
 insert into all_sets (set, line)
 select set, line from general_set;
