@@ -35,6 +35,7 @@ drop table judgments;
 create table judgments (
 	id integer primary key autoincrement,
 	task_id integer not null,
+	item integer not null,
 	corpus1 integer not null,
 	corpus2 integer not null,
 	line integer not null,

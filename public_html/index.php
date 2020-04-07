@@ -21,7 +21,7 @@
 		return array_key_exists($k, $_POST);
 	}
 
-	function store_judgment($db, $task_id, $line, $corpus1, $rank1, $corpus2, $rank2) {
+	function store_judgment($db, $task_id, $item, $corpus1, $rank1, $corpus2, $rank2) {
 		if($rank1 == $rank2)
 			$j = 0;
 		else if($rank1 < $rank2)
@@ -29,25 +29,25 @@
 		else
 			$j = 2;
 
-		$query = sprintf("update judgments set judgment=%d where corpus1=%d and corpus2=%d and line=%d",
-			$j, $corpus1, $corpus2, $line);
+		$query = sprintf("update judgments set judgment=%d where corpus1=%d and corpus2=%d and item=%d",
+			$j, $corpus1, $corpus2, $item);
 		$db->exec($query);
 	}
 
-	function create_judgments($db, $task_id, $corpus1, $corpus2, $orderid_to_compare) {
-		$query = $db->prepare("insert into judgments (task_id, corpus1, corpus2, line) " .
-			"select :task_id, :corpus1, :corpus2, s1.line from sentences as s1, sentences as s2 " .
-			"where s1.corpus=:corpus1 and s2.corpus=:corpus2 and s1.line=s2.line " .
-			"and s1.orderid=:orderid and s2.orderid=:orderid and s1.sentence != s2.sentence");
-		$params = array("task_id" => $task_id, "corpus1" => $corpus1, "corpus2" => $corpus2,
-				"orderid" => $orderid_to_compare);
-		if(!$query->execute($params)) {
-			echo "Problem creating judgment records.\n";
-			$arr = $db->errorInfo();
-			print_r($arr);
-			exit(1);
-		}
-	}
+# 	function create_judgments($db, $task_id, $corpus1, $corpus2, $orderid_to_compare) {
+# 		$query = $db->prepare("insert into judgments (task_id, corpus1, corpus2, line) " .
+# 			"select :task_id, :corpus1, :corpus2, s1.line from sentences as s1, sentences as s2 " .
+# 			"where s1.corpus=:corpus1 and s2.corpus=:corpus2 and s1.line=s2.line " .
+# 			"and s1.orderid=:orderid and s2.orderid=:orderid and s1.sentence != s2.sentence");
+# 		$params = array("task_id" => $task_id, "corpus1" => $corpus1, "corpus2" => $corpus2,
+# 				"orderid" => $orderid_to_compare);
+# 		if(!$query->execute($params)) {
+# 			echo "Problem creating judgment records.\n";
+# 			$arr = $db->errorInfo();
+# 			print_r($arr);
+# 			exit(1);
+# 		}
+# 	}
 
 	function get_lines($db, $corpus, $line) {
 		$get_lines = $db->prepare("select sentence from sentences where corpus=:corpus and line=:line order by orderid");
@@ -61,7 +61,7 @@
 		return $text;
 	}
 
-	$keys = array("corpus1", "corpus2", "corpus3", "line", "rank1", "rank2", "rank3");
+	$keys = array("corpus1", "corpus2", "corpus3", "item", "rank1", "rank2", "rank3");
 	if(array_product(array_map('check_post_key', $keys))) {
 		$rank_pairs = array(
 			$_POST["corpus1"] => $_POST["rank1"],
@@ -72,10 +72,10 @@
 		$corpora = array_keys($rank_pairs);
 		$ranks = array_values($rank_pairs);
 		$task_id = $_POST["task_id"];
-		$line = $_POST["line"];
-		store_judgment($db, $task_id, $line, $corpora[0], $ranks[0], $corpora[1], $ranks[1]);
-		store_judgment($db, $task_id, $line, $corpora[0], $ranks[0], $corpora[2], $ranks[2]);
-		store_judgment($db, $task_id, $line, $corpora[1], $ranks[1], $corpora[2], $ranks[2]);
+		$item = $_POST["item"];
+		store_judgment($db, $task_id, $item, $corpora[0], $ranks[0], $corpora[1], $ranks[1]);
+		store_judgment($db, $task_id, $item, $corpora[0], $ranks[0], $corpora[2], $ranks[2]);
+		store_judgment($db, $task_id, $item, $corpora[1], $ranks[1], $corpora[2], $ranks[2]);
 	}
 
 	$error = $done = false;
@@ -126,7 +126,7 @@
 	}
 
 	if(!$error && !$done) {
-		$query = sprintf("select line from judgments where task_id=%d and judgment is null " .
+		$query = sprintf("select item, line from judgments where task_id=%d and judgment is null " .
 			"order by random() limit 1", $task_id, $corpus1, $corpus2);
 		$res = $db->query($query);
 		if(!$res)
@@ -134,6 +134,7 @@
 	}
 	if(!$error && !$done) {
 		$record = $res->fetch();
+		$item = $record["item"];
 		$line = $record["line"];
 		do {
 			$error = 4;
@@ -264,7 +265,7 @@ Note: If the quality of two translations is the same, you may assign the same ra
 <input type="hidden" name="corpus1" value="<?php echo $corpus_ids[$perm[0]]; ?>" />
 <input type="hidden" name="corpus2" value="<?php echo $corpus_ids[$perm[1]]; ?>" />
 <input type="hidden" name="corpus3" value="<?php echo $corpus_ids[$perm[2]]; ?>" />
-<input type="hidden" name="line" value="<?php echo $line; ?>" />
+<input type="hidden" name="item" value="<?php echo $item; ?>" />
 </form>
 <p>
 <?php echo $number_done . "/" . $total_judgments; ?> items completed.
