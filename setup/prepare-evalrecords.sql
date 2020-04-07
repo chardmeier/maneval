@@ -156,7 +156,7 @@ from tasks, general_set
 where tasks.id=1;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-1, item, corpus2, corpus2, line
+1, item, corpus2, corpus3, line
 from tasks, general_set
 where tasks.id=1;
 
@@ -171,7 +171,7 @@ from tasks, general_set
 where tasks.id=2;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-2, item, corpus2, corpus2, line
+2, item, corpus2, corpus3, line
 from tasks, general_set
 where tasks.id=2;
 
@@ -186,7 +186,7 @@ from tasks, discourse_set
 where tasks.id=1;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-3, item, corpus2, corpus2, line
+3, item, corpus2, corpus3, line
 from tasks, discourse_set
 where tasks.id=1;
 
@@ -201,7 +201,7 @@ from tasks, discourse_set
 where tasks.id=2;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-4, item, corpus2, corpus2, line
+4, item, corpus2, corpus3, line
 from tasks, discourse_set
 where tasks.id=2;
 
