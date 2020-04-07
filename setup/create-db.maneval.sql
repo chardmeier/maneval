@@ -1,10 +1,10 @@
-drop table current_task;
+drop table current_task if exists;
 create table current_task (
 	key text primary key,
 	task integer
 );
 
-drop table tasks;
+drop table tasks if exists;
 create table tasks (
 	id integer primary key,
 	source integer not null,
@@ -14,14 +14,14 @@ create table tasks (
 	corpus3 integer not null
 );
 
-drop table corpora;
+drop table corpora if exists;
 create table corpora (
 	id integer primary key autoincrement,
 	name text not null,
 	srctgt integer not null
 );
 
-drop table sentences;
+drop table sentences if exists;
 create table sentences (
 	id integer primary key autoincrement,
 	corpus integer not null,
@@ -31,7 +31,7 @@ create table sentences (
 );
 create index sentences_corpusline on sentences (corpus, line);
 
-drop table judgments;
+drop table judgments if exists;
 create table judgments (
 	id integer primary key autoincrement,
 	task_id integer not null,
