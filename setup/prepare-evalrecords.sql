@@ -1,5 +1,8 @@
 begin;
 
+delete from tasks;
+delete from judgments;
+
 -- General corpora:
 -- in each set:
 --   320 unique lines
@@ -116,6 +119,8 @@ select set_id, line from discourse_set;
 
 -- Create task records
 
+-- Annotator 1
+
 insert into tasks (id, source, eval_type, corpus1, corpus2, corpus3)
 select 1, src.id, 'Fluency', baseline.id, docrepair.id, transference.id
 from corpora as src, corpora as baseline, corpora as docrepair, corpora as transference
@@ -148,6 +153,39 @@ baseline.name='discourse/baseline.txt' and
 docrepair.name='discourse/docrepair.txt' and
 transference.name='discourse/transference.txt';
 
+-- Annotator 2 - has adequacy and fluency swapped
+
+insert into tasks (id, source, eval_type, corpus1, corpus2, corpus3)
+select 5, src.id, 'Adequacy', baseline.id, docrepair.id, transference.id
+from corpora as src, corpora as baseline, corpora as docrepair, corpora as transference
+where src.name='general/source.txt' and
+baseline.name='general/baseline.txt' and
+docrepair.name='general/docrepair.txt' and
+transference.name='general/transference.txt';
+
+insert into tasks (id, source, eval_type, corpus1, corpus2, corpus3)
+select 6, src.id, 'Fluency', baseline.id, docrepair.id, transference.id
+from corpora as src, corpora as baseline, corpora as docrepair, corpora as transference
+where src.name='general/source.txt' and
+baseline.name='general/baseline.txt' and
+docrepair.name='general/docrepair.txt' and
+transference.name='general/transference.txt';
+
+insert into tasks (id, source, eval_type, corpus1, corpus2, corpus3)
+select 7, src.id, 'Adequacy', baseline.id, docrepair.id, transference.id
+from corpora as src, corpora as baseline, corpora as docrepair, corpora as transference
+where src.name='discourse/source.txt' and
+baseline.name='discourse/baseline.txt' and
+docrepair.name='discourse/docrepair.txt' and
+transference.name='discourse/transference.txt';
+
+insert into tasks (id, source, eval_type, corpus1, corpus2, corpus3)
+select 8, src.id, 'Fluency', baseline.id, docrepair.id, transference.id
+from corpora as src, corpora as baseline, corpora as docrepair, corpora as transference
+where src.name='discourse/source.txt' and
+baseline.name='discourse/baseline.txt' and
+docrepair.name='discourse/docrepair.txt' and
+transference.name='discourse/transference.txt';
 -- Create judgement records
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
@@ -209,3 +247,16 @@ insert into judgments (task_id, item, corpus1, corpus2, line)
 select 4, item, corpus1, corpus3, line
 from tasks, discourse_set
 where tasks.id=2;
+
+-- Judgements for the second annotator are the same, except for the
+-- swapping of adequacy and fluency in the task description.
+
+insert into judgments (task_id, item, corpus1, corpus2, line)
+select task_id+4, item, corpus1, corpus2, line
+from judgments;
+
+drop table general_set;
+drop table discourse_set;
+
+commit;
+
