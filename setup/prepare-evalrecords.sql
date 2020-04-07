@@ -151,61 +151,61 @@ transference.name='discourse/transference.txt';
 -- Create judgement records
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-1, item, corpus1, corpus2, line
+select 1, item, corpus1, corpus2, line
 from tasks, general_set
 where tasks.id=1;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-1, item, corpus2, corpus3, line
+select 1, item, corpus2, corpus3, line
 from tasks, general_set
 where tasks.id=1;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-1, item, corpus1, corpus3, line
+select 1, item, corpus1, corpus3, line
 from tasks, general_set
 where tasks.id=1;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-2, item, corpus1, corpus2, line
-from tasks, general_set
-where tasks.id=2;
-
-insert into judgments (task_id, item, corpus1, corpus2, line)
-2, item, corpus2, corpus3, line
+select 2, item, corpus1, corpus2, line
 from tasks, general_set
 where tasks.id=2;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-2, item, corpus1, corpus3, line
+select 2, item, corpus2, corpus3, line
 from tasks, general_set
 where tasks.id=2;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-3, item, corpus1, corpus2, line
+select 2, item, corpus1, corpus3, line
+from tasks, general_set
+where tasks.id=2;
+
+insert into judgments (task_id, item, corpus1, corpus2, line)
+select 3, item, corpus1, corpus2, line
 from tasks, discourse_set
 where tasks.id=1;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-3, item, corpus2, corpus3, line
+select 3, item, corpus2, corpus3, line
 from tasks, discourse_set
 where tasks.id=1;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-3, item, corpus1, corpus3, line
+select 3, item, corpus1, corpus3, line
 from tasks, discourse_set
 where tasks.id=1;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-4, item, corpus1, corpus2, line
+select 4, item, corpus1, corpus2, line
 from tasks, discourse_set
 where tasks.id=2;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-4, item, corpus2, corpus3, line
+select 4, item, corpus2, corpus3, line
 from tasks, discourse_set
 where tasks.id=2;
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
-4, item, corpus1, corpus3, line
+select 4, item, corpus1, corpus3, line
 from tasks, discourse_set
 where tasks.id=2;
