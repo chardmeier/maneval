@@ -186,67 +186,88 @@ where src.name='discourse/source.txt' and
 baseline.name='discourse/baseline.txt' and
 docrepair.name='discourse/docrepair.txt' and
 transference.name='discourse/transference.txt';
+
 -- Create judgement records
 
-insert into judgments (task_id, item, corpus1, corpus2, line)
-select tasks.id, item, corpus1, corpus2, line
-from tasks, general_set
-where tasks.id=1;
-
-insert into judgments (task_id, item, corpus1, corpus2, line)
-select tasks.id, item, corpus2, corpus3, line
-from tasks, general_set
-where tasks.id=1;
-
-insert into judgments (task_id, item, corpus1, corpus2, line)
-select tasks.id, item, corpus1, corpus3, line
-from tasks, general_set
-where tasks.id=1;
+-- Task 1: Set General A, fluency, Annotator 1
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
 select tasks.id, item, corpus1, corpus2, line
 from tasks, general_set
-where tasks.id=2;
+where tasks.id=1
+and set_id='A';
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
 select tasks.id, item, corpus2, corpus3, line
 from tasks, general_set
-where tasks.id=2;
+where tasks.id=1
+and set_id='A';
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
 select tasks.id, item, corpus1, corpus3, line
 from tasks, general_set
-where tasks.id=2;
+where tasks.id=1
+and set_id='A';
+
+-- Task 2: Set General B, adequacy, Annotator 1
+
+insert into judgments (task_id, item, corpus1, corpus2, line)
+select tasks.id, item, corpus1, corpus2, line
+from tasks, general_set
+where tasks.id=2
+and set_id='B';
+
+insert into judgments (task_id, item, corpus1, corpus2, line)
+select tasks.id, item, corpus2, corpus3, line
+from tasks, general_set
+where tasks.id=2
+and set_id='B';
+
+insert into judgments (task_id, item, corpus1, corpus2, line)
+select tasks.id, item, corpus1, corpus3, line
+from tasks, general_set
+where tasks.id=2
+and set_id='B';
+
+-- Task 3: Set Discourse A, fluency, Annotator 1
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
 select tasks.id, item, corpus1, corpus2, line
 from tasks, discourse_set
-where tasks.id=3;
+where tasks.id=3
+and set_id='A';
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
 select tasks.id, item, corpus2, corpus3, line
 from tasks, discourse_set
-where tasks.id=3;
+where tasks.id=3
+and set_id='A';
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
 select tasks.id, item, corpus1, corpus3, line
 from tasks, discourse_set
-where tasks.id=3;
+where tasks.id=3
+and set_id='A';
+
+-- Task 4: Set Discourse B, adequacy, Annotator 2
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
 select tasks.id, item, corpus1, corpus2, line
 from tasks, discourse_set
-where tasks.id=4;
+where tasks.id=4
+and set_id='B';
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
 select tasks.id, item, corpus2, corpus3, line
 from tasks, discourse_set
-where tasks.id=4;
+where tasks.id=4
+and set_id='B';
 
 insert into judgments (task_id, item, corpus1, corpus2, line)
 select tasks.id, item, corpus1, corpus3, line
 from tasks, discourse_set
-where tasks.id=4;
+where tasks.id=4
+and set_id='B';
 
 -- Judgements for the second annotator are the same, except for the
 -- swapping of adequacy and fluency in the task description.
