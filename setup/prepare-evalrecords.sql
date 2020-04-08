@@ -276,6 +276,32 @@ insert into judgments (task_id, item, corpus1, corpus2, line)
 select task_id+4, item, corpus1, corpus2, line
 from judgments;
 
+-- Set up task keys
+
+insert into current_task (key, task)
+values ('AGA1f25a', 1);
+
+insert into current_task (key, task)
+values ('FGB1103d', 2);
+
+insert into current_task (key, task)
+values ('ADA15544', 3);
+
+insert into current_task (key, task)
+values ('FDB143a6', 4);
+
+insert into current_task (key, task)
+values ('FGA2da88', 5);
+
+insert into current_task (key, task)
+values ('AGB2d476', 6);
+
+insert into current_task (key, task)
+values ('FDA2def4', 7);
+
+insert into current_task (key, task)
+values ('ADB236df', 8);
+
 drop table general_set;
 drop table discourse_set;
 
