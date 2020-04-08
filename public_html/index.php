@@ -21,6 +21,10 @@
 		return array_key_exists($k, $_POST);
 	}
 
+	function validate_rank($r) {
+		return $r == 1 || $r == 2 || $r == 3;
+	}
+
 	function store_judgment($db, $task_id, $item, $corpus1, $rank1, $corpus2, $rank2) {
 		if($rank1 == $rank2)
 			$j = 0;
@@ -71,11 +75,13 @@
 		ksort($rank_pairs);
 		$corpora = array_keys($rank_pairs);
 		$ranks = array_values($rank_pairs);
-		$task_id = $_POST["task_id"];
-		$item = $_POST["item"];
-		store_judgment($db, $task_id, $item, $corpora[0], $ranks[0], $corpora[1], $ranks[1]);
-		store_judgment($db, $task_id, $item, $corpora[0], $ranks[0], $corpora[2], $ranks[2]);
-		store_judgment($db, $task_id, $item, $corpora[1], $ranks[1], $corpora[2], $ranks[2]);
+		if(array_product(array_map('validate_rank', $rank_pairs))) {
+			$task_id = $_POST["task_id"];
+			$item = $_POST["item"];
+			store_judgment($db, $task_id, $item, $corpora[0], $ranks[0], $corpora[1], $ranks[1]);
+			store_judgment($db, $task_id, $item, $corpora[0], $ranks[0], $corpora[2], $ranks[2]);
+			store_judgment($db, $task_id, $item, $corpora[1], $ranks[1], $corpora[2], $ranks[2]);
+		}
 	}
 
 	$error = $done = false;
