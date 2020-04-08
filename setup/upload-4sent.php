@@ -1,7 +1,7 @@
 #! /usr/local/bin/php
 <?php
 
-if(count($argv) != 2) {
+if(count($argv) != 3) {
 	echo "Usage: upload-4sent database infile\n";
 	exit(1);
 }
