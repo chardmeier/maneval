@@ -20,3 +20,8 @@ php ../upload-4sent.php discourse/docrepair.txt
 php ../upload-4sent.php discourse/transference.txt
 
 sqlite3 ../maneval.db 'update corpora set srctgt=0 where name like "%source.txt";'
+
+cd ..
+
+sqlite3 maneval.db <prepare-evalrecords.sql
+
