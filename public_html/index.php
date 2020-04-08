@@ -80,7 +80,7 @@
 
 	$error = $done = false;
 
-	$key = $_GET["key"];
+	$key = $_REQUEST["key"];
 
 	$get_task_description = $db->prepare("select tasks.* from tasks, current_task " .
 		"where tasks.id=current_task.task and current_task.key=:key");
@@ -261,6 +261,7 @@ Note: If the quality of two translations is the same, you may assign the same ra
 ?>
 <td></td><td></td><td align="right"><button>Submit</button></td>
 </table>
+<input type="hidden" name="key" value="<?php echo $key; ?>" />
 <input type="hidden" name="task_id" value="<?php echo $task_id; ?>" />
 <input type="hidden" name="corpus1" value="<?php echo $corpus_ids[$perm[0]]; ?>" />
 <input type="hidden" name="corpus2" value="<?php echo $corpus_ids[$perm[1]]; ?>" />
