@@ -2,12 +2,13 @@
 <?php
 
 if(count($argv) != 2) {
-	echo "Usage: upload-4sent infile\n";
+	echo "Usage: upload-4sent database infile\n";
 	exit(1);
 }
-$infile = $argv[1];
+$database = $argv[1];
+$infile = $argv[2];
 
-$db = new PDO("sqlite:/home/staff/ch/maneval-enru/data/maneval.db");
+$db = new PDO("sqlite:" . $database);
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $find_corpus = $db->prepare("select id from corpora where name=:name");
