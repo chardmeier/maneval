@@ -14,7 +14,7 @@
 
 	error_reporting(E_ALL | E_STRICT);
 
-	$db = new PDO("sqlite:maneval.db");
+	$db = new PDO("sqlite:/home/staff/ch/maneval-enru/data/maneval.db");
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 	function check_post_key($k) {
