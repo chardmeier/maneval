@@ -14,7 +14,7 @@
 
 	error_reporting(E_ALL | E_STRICT);
 
-	$db = new PDO("sqlite:/home/staff/ch/maneval-enru/data/maneval.db");
+	$db = new PDO("sqlite:maneval.db");
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 	function check_post_key($k) {
@@ -115,7 +115,8 @@
 		$check_judgments->execute(array("task_id" => $task_id));
 		$record = $check_judgments->fetch();
 
-		$total_judgments = $record[0];
+		# divide by 3 because each item has 3 judgment records
+		$total_judgments = $record[0] / 3;
 		if($record[0] == 0) {
 			$error = 5;
 			# create_judgments($db, $task_id, $corpus1, $corpus2, 3);
@@ -125,7 +126,7 @@
 
 		$count_done->execute(array("task_id" => $task_id));
 		$record = $count_done->fetch();
-		$number_done = $record[0];
+		$number_done = $record[0] / 3;
 
 		if($number_done == $total_judgments)
 			$done = true;
