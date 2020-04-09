@@ -41,4 +41,4 @@ create table judgments (
 	line integer not null,
 	judgment integer
 );
-create index judgments_c1c2taskline on judgments (corpus1, corpus2, task_id, line);
+create index judgments_c1c2item on judgments (corpus1, corpus2, item);
