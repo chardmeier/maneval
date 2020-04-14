@@ -218,6 +218,8 @@ Note: If the quality of two translations is the same, you may assign the same ra
 		if($i == count($s_lines) - 1)
 			$bgcol = "bgcolor=\"#faec9d\"";
 
+		echo "<tr>";
+
 		if($show_source)
 			echo "<td valign=\"top\" " . $bgcol . ">" . htmlspecialchars($s_lines[$i]) . "</td>";
 		echo "<td valign=\"top\" " . $bgcol . ">" . htmlspecialchars($translations[$perm[0]][$i]) . "</td>" .
