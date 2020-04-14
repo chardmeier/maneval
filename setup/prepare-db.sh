@@ -25,3 +25,5 @@ cd ..
 
 sqlite3 maneval.db <prepare-evalrecords.sql
 
+chmod 666 maneval.db
+
