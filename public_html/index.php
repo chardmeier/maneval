@@ -33,8 +33,8 @@
 		else
 			$j = 2;
 
-		$query = sprintf("update judgments set judgment=%d where corpus1=%d and corpus2=%d and item=%d",
-			$j, $corpus1, $corpus2, $item);
+		$query = sprintf("update judgments set judgment=%d where task_id=%d and corpus1=%d and corpus2=%d and item=%d",
+			$j, $task_id, $corpus1, $corpus2, $item);
 		$db->exec($query);
 	}
 
