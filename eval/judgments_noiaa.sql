@@ -33,7 +33,7 @@ delete from judgments_noiaa where id in
         and t1.eval_type=t2.eval_type and t1.source=t2.source
         and j1.judgment!=j2.judgment);
 
--- if annotations agree, delete only one of them (note j1.item<j2.item)
+-- if annotations agree, delete only one of them (note j1.task_id<j2.task_id)
 
 delete from judgments_noiaa where id in
     (select j2.id from judgments_noiaa as j1, judgments_noiaa as j2, tasks as t1, tasks as t2
