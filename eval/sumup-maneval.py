@@ -1,0 +1,96 @@
+import numpy
+import pandas
+import sqlite3
+
+
+def main():
+    dbfile = '/Users/christianhardmeier/Documents/project/2020-Chaojun/maneval-complete.db'
+    db = sqlite3.connect(dbfile)
+
+    report_intra_annotator_agreement(db)
+    print()
+    print()
+
+    report_inter_annotator_agreement(db)
+    print()
+    print()
+
+    report_system_comparison(db)
+
+
+def report_intra_annotator_agreement(db):
+    print('INTRA-ANNOTATOR AGREEMENT')
+    print('=========================')
+    print()
+    print('Agreement per task:')
+    print()
+
+    cur = db.cursor()
+    cur.execute('''select j1.task_id as task, j1.judgment as jg1, j2.judgment as jg2, count(*) as cnt
+                from judgments as j1, judgments as j2
+                where j1.corpus1=j2.corpus1 and j1.corpus2=j2.corpus2
+                and j1.line=j2.line and j1.task_id=j2.task_id and j1.item<j2.item
+                group by task, jg1, jg2 order by task, jg1, jg2''')
+    data = cur.fetchall()
+    res = pandas.DataFrame(data, columns=['task', 'jg1', 'jg2', 'cnt'], dtype=numpy.int)
+
+    report_per_task(cur, res)
+
+    print()
+    print('Agreement per annotator:')
+    print('Annotator 1 (Tasks 1-4)')
+    report_agreement(res[res['task'] <= 4])
+    print()
+    print('Annotator 2 (Tasks 5-8)')
+    report_agreement(res[res['task'] >= 5])
+
+
+def report_inter_annotator_agreement(db):
+    print('INTER-ANNOTATOR AGREEMENT')
+    print('=========================')
+    print()
+    print('Agreement per task:')
+    print()
+
+    cur = db.cursor()
+    cur.execute('''select j1.task_id as i1, j2.task_id as i2, j1.judgment as jg1, j2.judgment as jg2, count(*)
+                from judgments as j1, judgments as j2, tasks as t1, tasks as t2
+                where j1.corpus1=j2.corpus1 and j1.corpus2=j2.corpus2
+                  and j1.line=j2.line and j1.task_id!=j2.task_id
+                  and j1.task_id=t1.id and j2.task_id=t2.id
+                  and t1.eval_type=t2.eval_type and t1.source=t2.source
+                  and i1 < i2
+                group by i1, jg1, jg2 order by i1, jg1, jg2''')
+    data = cur.fetchall()
+    res = pandas.DataFrame(data, columns=['task', 'task2', 'jg1', 'jg2', 'cnt'], dtype=numpy.int)
+
+    report_per_task(cur, res, max_tasks=4)
+
+
+def report_agreement(subres):
+    total = subres['cnt'].sum()
+    match = subres[subres['jg1'] == subres['jg2']]['cnt'].sum()
+    print('Match: %d/%d = %g' % (match, total, match / total))
+
+
+def report_per_task(cur, res, max_tasks=None):
+    cur.execute('''select tasks.id, tasks.eval_type, src.name, c1.name, c2.name, c3.name 
+                from tasks, corpora as src, corpora as c1, corpora as c2, corpora as c3
+                where tasks.source=src.id and tasks.corpus1=c1.id 
+                and tasks.corpus2=c2.id and tasks.corpus3=c3.id
+                order by tasks.id''')
+    for task, eval_type, src, c1, c2, c3 in cur.fetchall():
+        if max_tasks and task > max_tasks:
+            break
+        print('TASK %d: %s %s %s %s %s' % (task, eval_type, src, c1, c2, c3))
+        subres = res[res['task'] == task]
+        report_agreement(subres)
+        print()
+
+
+def report_system_comparison(db):
+    return
+
+
+if __name__ == '__main__':
+    main()
