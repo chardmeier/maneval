@@ -7,6 +7,9 @@ def main():
     dbfile = '/Users/christianhardmeier/Documents/project/2020-Chaojun/maneval-complete.db'
     db = sqlite3.connect(dbfile)
 
+    pandas.set_option('display.width', 500)
+    pandas.set_option('display.max_columns', None)
+
     report_intra_annotator_agreement(db)
     print()
     print()
@@ -89,6 +92,49 @@ def report_per_task(cur, res, max_tasks=None):
 
 
 def report_system_comparison(db):
+    print('SYSTEM COMPARISON')
+    print('=================')
+    print()
+
+    cur = db.cursor()
+    cur.execute('''select eval_type, src.name, c1.name, c2.name, judgment, count(*)
+                from tasks, judgments_noiaa as j, corpora as src, corpora as c1, corpora as c2
+                where tasks.id=j.task_id and src.id=tasks.source
+                and c1.id=j.corpus1 and c2.id=j.corpus2
+                group by eval_type, source, j.corpus1, j.corpus2, judgment
+                order by eval_type, source, j.corpus1, j.corpus2, judgment''')
+    res = pandas.DataFrame(cur.fetchall(), columns=['eval_type', 'corpus', 'sys1', 'sys2', 'judgment', 'cnt'])
+
+    print('Adequacy:')
+    print()
+    print('General corpus:')
+    compare_for_corpus(res, 'Adequacy', 'general/source.txt')
+    print()
+    print('Discourse corpus:')
+    compare_for_corpus(res, 'Adequacy', 'discourse/source.txt')
+    print()
+    print()
+    print('Fluency:')
+    print()
+    print('General corpus:')
+    compare_for_corpus(res, 'Fluency', 'general/source.txt')
+    print()
+    print('Discourse corpus:')
+    compare_for_corpus(res, 'Fluency', 'discourse/source.txt')
+
+
+def compare_for_corpus(res, eval_type, corpus):
+    subset = res[(res['eval_type'] == eval_type) & (res['corpus'] == corpus)]
+
+    discord = subset[subset['judgment'] != 0].copy()
+    jg2 = discord['judgment'] == 2
+    discord.loc[jg2, ['sys1', 'sys2']] = discord.loc[jg2, ['sys2', 'sys1']].values
+    discord = discord.drop(columns=['corpus', 'eval_type', 'judgment'])
+    discord = discord.rename(columns={'sys1': 'winner', 'sys2': 'loser'})
+
+    tab = discord.pivot_table(values='cnt', index='loser', columns='winner', fill_value=0)
+    print(tab)
+
     return
 
 
