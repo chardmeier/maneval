@@ -3,6 +3,8 @@ import pandas
 import scipy.stats
 import sqlite3
 
+from nltk.metrics.agreement import AnnotationTask
+
 
 def main():
     dbfile = '/Users/christianhardmeier/Documents/project/2020-Chaojun/maneval-complete.db'
@@ -69,6 +71,25 @@ def report_inter_annotator_agreement(db):
     res = pandas.DataFrame(data, columns=['task', 'task2', 'jg1', 'jg2', 'cnt'], dtype=numpy.int)
 
     report_per_task(cur, res, max_tasks=4)
+
+    cur.execute('''select t1.eval_type, src.name, t1.id, t2.id
+                from tasks as t1, tasks as t2, corpora as src
+                where t1.source=t2.source and t1.eval_type=t2.eval_type
+                and src.id=t1.source and t1.id<t2.id''')
+    paired_tasks = cur.fetchall()
+
+    cur.execute("select task_id, corpus1 || '-' ||  corpus2 || '-' || line, judgment from judgments_nointra")
+    res = pandas.DataFrame(cur.fetchall(), columns=['task', 'exid', 'judgment'])
+
+    for eval_type, corpus, task1, task2 in paired_tasks:
+        subset1 = res[res['task'] == task1]
+        subset2 = res[res['task'] == task2]
+        iaa_exid = set(subset1['exid']).intersection(subset2['exid'])
+        iaa_data = list(subset1[subset1['exid'].isin(iaa_exid)].itertuples(index=False, name=None))
+        iaa_data.extend(subset2[subset2['exid'].isin(iaa_exid)].itertuples(index=False, name=None))
+        agr = AnnotationTask(iaa_data)
+        print('%s %s alpha=%g pi=%g' % (eval_type, corpus, agr.alpha(), agr.pi()))
+
 
 
 def report_agreement(subres):
