@@ -1,7 +1,7 @@
 begin;
 
-drop table if exists judgments_noiaa;
-create table judgments_noiaa as select * from judgments;
+drop table if exists judgments_nointra;
+create table judgments_nointra as select * from judgments;
 
 -- Intra-annotator examples
 
@@ -12,8 +12,8 @@ create table deleted_judgments_intra (id integer);
 
 insert into deleted_judgments_intra
 select j1.id
-from judgments_noiaa as j1,
-     judgments_noiaa as j2
+from judgments_nointra as j1,
+     judgments_nointra as j2
 where j1.corpus1 = j2.corpus1
   and j1.corpus2 = j2.corpus2
   and j1.line = j2.line
@@ -25,8 +25,8 @@ where j1.corpus1 = j2.corpus1
 
 insert into deleted_judgments_intra
 select j2.id
-from judgments_noiaa as j1,
-     judgments_noiaa as j2
+from judgments_nointra as j1,
+     judgments_nointra as j2
 where j1.corpus1 = j2.corpus1
   and j1.corpus2 = j2.corpus2
   and j1.line = j2.line
@@ -34,9 +34,12 @@ where j1.corpus1 = j2.corpus1
   and j1.item < j2.item
   and j1.judgment = j2.judgment;
 
-delete from judgments_noiaa where id in (select id from deleted_judgments_intra);
+delete from judgments_nointra where id in (select id from deleted_judgments_intra);
 
 -- Inter-annotation examples
+
+drop table if exists judgments_noiaa;
+create table judgments_noiaa as select * from judgments_nointra;
 
 drop table if exists deleted_judgments_inter;
 create table deleted_judgments_inter (id integer);
