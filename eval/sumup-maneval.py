@@ -58,7 +58,7 @@ def report_inter_annotator_agreement(db):
 
     cur = db.cursor()
     cur.execute('''select j1.task_id as i1, j2.task_id as i2, j1.judgment as jg1, j2.judgment as jg2, count(*)
-                from judgments as j1, judgments as j2, tasks as t1, tasks as t2
+                from judgments_nointra as j1, judgments_nointra as j2, tasks as t1, tasks as t2
                 where j1.corpus1=j2.corpus1 and j1.corpus2=j2.corpus2
                   and j1.line=j2.line and j1.task_id!=j2.task_id
                   and j1.task_id=t1.id and j2.task_id=t2.id
