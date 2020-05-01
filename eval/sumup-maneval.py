@@ -79,7 +79,7 @@ def report_inter_annotator_agreement(db):
 def report_agreement(subres):
     total = subres['cnt'].sum()
     match = subres[subres['jg1'] == subres['jg2']]['cnt'].sum()
-    print('Match: %d/%d = %g' % (match, total, match / total))
+    print('Ao = %d/%d = %g' % (match, total, match / total))
 
 
 def report_per_task(cur, res, max_tasks=None):
