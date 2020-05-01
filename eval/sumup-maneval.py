@@ -91,7 +91,6 @@ def report_inter_annotator_agreement(db):
         print('%s %s alpha=%g pi=%g' % (eval_type, corpus, agr.alpha(), agr.pi()))
 
 
-
 def report_agreement(subres):
     total = subres['cnt'].sum()
     match = subres[subres['jg1'] == subres['jg2']]['cnt'].sum()
