@@ -1,5 +1,6 @@
 import numpy
 import pandas
+import scipy.stats
 import sqlite3
 
 
@@ -134,8 +135,40 @@ def compare_for_corpus(res, eval_type, corpus):
 
     tab = discord.pivot_table(values='cnt', index='loser', columns='winner', fill_value=0)
     print(tab)
+    print()
 
-    return
+    print("Liddell's test for pairwise comparisons")
+    for s1, s2 in [(0, 1), (0, 2), (1, 2)]:
+        sys1 = tab.index[s1]
+        sys2 = tab.index[s2]
+        s1_wins = tab.values[s2, s1]
+        s2_wins = tab.values[s1, s2]
+
+        if s1_wins < s2_wins:
+            cmp = '<'
+        elif s1_wins > s2_wins:
+            cmp = '>'
+        else:
+            cmp = '='
+
+        p, f = liddell(s1_wins, s2_wins)
+        print('%s %s %s (F = %g, p = %g)' % (sys1, cmp, sys2, f, p))
+
+
+def liddell(r, s):
+    # F.D.K. Liddell. Simplified Exact Analysis of Case-Referent Studies: Matched Pairs; Dichotomous Exposure.
+    # Journal of Epidemiology and Community Health, 37 (1983) 1, pp. 82-84.
+
+    if r < s:
+        r, s = s, r
+
+    f = r / (s + 1)
+    df1 = 2 * (s + 1)
+    df2 = 2 * r
+
+    p = 2.0 * (1.0 - scipy.stats.f.cdf(f, df1, df2))
+
+    return p, f
 
 
 if __name__ == '__main__':
