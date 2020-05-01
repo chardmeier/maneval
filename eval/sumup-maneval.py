@@ -88,7 +88,7 @@ def report_inter_annotator_agreement(db):
         iaa_data = list(subset1[subset1['exid'].isin(iaa_exid)].itertuples(index=False, name=None))
         iaa_data.extend(subset2[subset2['exid'].isin(iaa_exid)].itertuples(index=False, name=None))
         agr = AnnotationTask(iaa_data)
-        print('%s %s alpha=%g pi=%g' % (eval_type, corpus, agr.alpha(), agr.pi()))
+        print('%s %s Ao=%g kappa=%g alpha=%g pi=%g' % (eval_type, corpus, agr.Ao(task1, task2), agr.kappa(), agr.alpha(), agr.pi()))
 
 
 def report_agreement(subres):
