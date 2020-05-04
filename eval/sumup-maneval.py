@@ -142,7 +142,7 @@ def compare_for_corpus(res, eval_type, corpus):
     print(tab)
     print()
 
-    print("Liddell's test for pairwise comparisons")
+    print("Sign test for pairwise comparisons")
     for s1, s2 in [(0, 1), (0, 2), (1, 2)]:
         sys1 = tab.index[s1]
         sys2 = tab.index[s2]
@@ -156,8 +156,9 @@ def compare_for_corpus(res, eval_type, corpus):
         else:
             cmp = '='
 
-        p, f = liddell(s1_wins, s2_wins)
-        print('%s %s %s (F = %g, p = %g)' % (sys1, cmp, sys2, f, p))
+        p = scipy.stats.binom_test((s1_wins, s2_wins))
+        sig = 'significant' if p < .05 else 'not significant'
+        print('%s %s %s (p = %g, %s)' % (sys1, cmp, sys2, p, sig))
 
 
 def liddell(r, s):
