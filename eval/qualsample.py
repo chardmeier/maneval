@@ -49,11 +49,15 @@ def main():
 
         for (corpus, line), s in smpl.iterrows():
             print('<h1>{corpus}-{line}</h1>'.format(corpus=corpus, line=line))
-            print('<table>')
+            # Table borders for MS Word
+            # https://stackoverflow.com/a/20126810/2575705
+            print('''<table border=1 cellspacing=0 cellpadding=0 
+               style="border-collapse:collapse;border:none;mso-border-alt:solid windowtext .5pt;">''')
             for i in range(4):
                 fstr = '<tr><td>{src-%d}</td><td>{sys1-%d}</td><td>{sys2-%d}</td>' % (i, i, i)
                 print(fstr.format(**s.to_dict()))
             print('</table>')
+            print('<p><strong>Observations:</strong> </p>')
 
     print('</body>\n</html>')
 
