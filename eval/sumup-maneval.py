@@ -142,6 +142,10 @@ def compare_for_corpus(res, eval_type, corpus):
     print(tab)
     print()
 
+    print('Tied judgements:')
+    print(subset[subset['judgment'] == 0])
+    print()
+
     print("Sign test for pairwise comparisons")
     for s1, s2 in [(0, 1), (0, 2), (1, 2)]:
         sys1 = tab.index[s1]
